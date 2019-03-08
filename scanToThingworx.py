@@ -11,12 +11,14 @@ import json
 
 #scanner for rasperrypi to load onto thingworx
 data = raw_input("Please scan an item: ")
+base_url = "https://pp-1901291615ip.devportal.ptc.io" #Will need to be changed on each vm startup
+appkey = "" #will make the appkey a variable when I obtain it
 
 def thingSearch(data):
     print("Item number: " + data)
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/" + data
+    url = "{}/Thingworx/Things/"+data.format(base_url)
     header = {"Content-Type": "application/json"
-              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
+              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8" #Will need a new appKey
 	      ,"Accept": "application/json"
               }
 
@@ -29,7 +31,7 @@ def thingSearch(data):
     return code
 
 def enableThing(data):
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/EnableThing"
+    url = "{}/Thingworx/Things/"+data+"/Services/EnableThing".format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
@@ -37,7 +39,7 @@ def enableThing(data):
     print(response.status_code)
 
 def restartThing(data):
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/RestartThing"
+    url = "{}/Thingworx/Things/"+data+"/Services/RestartThing".format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
@@ -46,7 +48,7 @@ def restartThing(data):
 
 def addThing(data):
     dataName = raw_input("Please give scanned item a display name: ")
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Resources/EntityServices/Services/CreateThing"
+    url = "{}/Thingworx/Resources/EntityServices/Services/CreateThing".format(base_url)
     header = {
         "Content-Type": "application/json"
         ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
@@ -63,7 +65,7 @@ def addThing(data):
     print(json.dumps(parameters))
 
 def addProperties(data):
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/AddPropertyDefinition"
+    url = "{}/Thingworx/Things/"+data+"/Services/AddPropertyDefinition".format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
@@ -83,7 +85,7 @@ def addProperties(data):
 
 def addValues(data):
     propertyName = raw_input("Which property would you like to change? ")
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Properties/*"
+    url = "{}/Thingworx/Things/"+data+"/Properties/*".format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
@@ -96,23 +98,24 @@ def addValues(data):
     print(response.content)
     print(json.dumps(parameters))
 
-try:
-    thingSearch(data)
-    if code != 200:
-        addThing(data)
-        enableThing(data)
-        restartThing(data)
-    else:
-        addProps = raw_input("Would you like to add properties?: Yes/No ")
-        if addProps == "Yes":
-            addProperties(data)
+if __name__ == "__main__":
+    try:
+        thingSearch(data)
+        if code != 200:
+            addThing(data)
+            enableThing(data)
+            restartThing(data)
         else:
-            print("Exiting Program")
-        addVals = raw_input("Would you like to add values to properties?: Yes/No ")
-        if addVals == "Yes":
-            addValues(data)
-        else:
-            print("Exiting Program")
+            addProps = raw_input("Would you like to add properties?: Yes/No ")
+            if addProps == "Yes":
+                addProperties(data)
+            else:
+                print("Exiting Program")
+            addVals = raw_input("Would you like to add values to properties?: Yes/No ")
+            if addVals == "Yes":
+                addValues(data)
+            else:
+                print("Exiting Program")
 
-except KeyboardInterrupt:
-    print("Ctrl+C Programing Exiting")
+    except KeyboardInterrupt:
+        print("Ctrl+C Programing Exiting")

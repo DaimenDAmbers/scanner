@@ -12,14 +12,14 @@ import json
 #scanner for rasperrypi to load onto thingworx
 data = raw_input("Please scan an item: ")
 base_url = "https:<ip_address>/Thingworx" #Will need to be changed on each vm startup
-appkey = "" #will make the appkey a variable when I obtain it
+appKey = "" #will make the appkey a variable when I obtain it
 
 def thingSearch(data):
     print("Item number: " + data)
     url = "{}/Things/"+data.format(base_url)
     header = {"Content-Type": "application/json"
-              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8" #Will need a new appKey
-	      ,"Accept": "application/json"
+              ,"appKey": appKey
+	          ,"Accept": "application/json"
               }
 
     response = requests.get(url, headers=header)
@@ -33,7 +33,7 @@ def thingSearch(data):
 def enableThing(data):
     url = "{}/Things/"+data+"/Services/EnableThing".format(base_url)
     header = {"Content-Type": "application/json"
-              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
+              ,"appKey": appKey
               }
     response = requests.post(url, headers=header)
     print(response.status_code)
@@ -51,7 +51,7 @@ def addThing(data):
     url = "{}/Resources/EntityServices/Services/CreateThing".format(base_url)
     header = {
         "Content-Type": "application/json"
-        ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
+        ,"appKey": appKey
         }
 
     parameters = {
@@ -67,7 +67,7 @@ def addThing(data):
 def addProperties(data):
     url = "{}/Things/"+data+"/Services/AddPropertyDefinition".format(base_url)
     header = {"Content-Type": "application/json"
-              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
+              ,"appKey": appKey
               }
     global propertyName
     propertyName = input("Please give property a name: ")
@@ -87,7 +87,7 @@ def addValues(data):
     propertyName = raw_input("Which property would you like to change? ")
     url = "{}/Things/"+data+"/Properties/*".format(base_url)
     header = {"Content-Type": "application/json"
-              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
+              ,"appKey": appKey
               }
     value = input("Please give property a value: ")
     parameters = {
@@ -97,6 +97,15 @@ def addValues(data):
     print(response.status_code)
     print(response.content)
     print(json.dumps(parameters))
+
+def services(data):
+    serviceName = raw_input("Name of service to execute: ")
+    url = '{}/Things'+data+'/Services/'+serviceName.format(base_url)
+    header = {"Content-Type": "application/json"
+              ,"appKey": appKey}
+    response = requests.post(url, headers=header)
+    print(response.status_code)
+    print(response.content)
 
 if __name__ == "__main__":
     try:
@@ -111,9 +120,16 @@ if __name__ == "__main__":
                 addProperties(data)
             else:
                 print("Exiting Program")
+
             addVals = raw_input("Would you like to add values to properties?: Yes/No ")
             if addVals == "Yes":
                 addValues(data)
+            else:
+                print("Exiting Program")
+
+            executeService = raw_input("Would you like to execute a service?: Yes/No ")
+            if executeService == "Yes":
+                services(data)
             else:
                 print("Exiting Program")
 

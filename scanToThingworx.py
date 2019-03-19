@@ -10,11 +10,14 @@ import requests
 import json
 
 #scanner for rasperrypi to load onto thingworx
-data = raw_input("Please scan an item: ")
+data = input("Please scan an item: ")
+base_url = "https://<ip_address>/Thingworx"
+
 
 def thingSearch(data):
     print("Item number: " + data)
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/" + data
+    #url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/" + data
+    url = '{}/Things'+data.format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
 	      ,"Accept": "application/json"
@@ -29,7 +32,8 @@ def thingSearch(data):
     return code
 
 def enableThing(data):
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/EnableThing"
+    #url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/EnableThing"
+    url = '{}/Things'+data+'/Services/EnableThing'.format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
@@ -37,7 +41,8 @@ def enableThing(data):
     print(response.status_code)
 
 def restartThing(data):
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/RestartThing"
+    #url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/RestartThing"
+    url = '{}/Things/'+data+'/Services/RestartThing'.format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
@@ -45,8 +50,10 @@ def restartThing(data):
     print(response.status_code)
 
 def addThing(data):
-    dataName = raw_input("Please give scanned item a display name: ")
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Resources/EntityServices/Services/CreateThing"
+    dataName = input("Please give scanned item a display name: ")
+    #url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Resources/EntityServices/Services/CreateThing"
+    add_url = "/Resources/EntityServices/Services/CreateThing"
+    url = '{}{}'.format(base_url, add_url)
     header = {
         "Content-Type": "application/json"
         ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
@@ -63,14 +70,15 @@ def addThing(data):
     print(json.dumps(parameters))
 
 def addProperties(data):
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/AddPropertyDefinition"
+    #url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Services/AddPropertyDefinition"
+    url = '{}'+data+'/Services/AddPropertyDefinition'.format(base_url)
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
     global propertyName
-    propertyName = raw_input("Please give property a name: ")
-    ptype = raw_input("Please give a unit type in all CAPS. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
-    description = raw_input("Please give a descrption of the property: ")
+    propertyName = input("Please give property a name: ")
+    ptype = input("Please give a unit type in all CAPS. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
+    description = input("Please give a descrption of the property: ")
     parameters = {
         "name": propertyName
         ,"type": ptype
@@ -82,12 +90,13 @@ def addProperties(data):
     print(json.dumps(parameters))
 
 def addValues(data):
-    propertyName = raw_input("Which property would you like to change? ")
-    url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Properties/*"
+    propertyName = input("Which property would you like to change? ")
+    #url = "https://pp-1901291615ip.devportal.ptc.io/Thingworx/Things/"+data+"/Properties/*"
+    url = '{}/Things'+data+'/Properties/*'
     header = {"Content-Type": "application/json"
               ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
               }
-    value = raw_input("Please give property a value: ")
+    value = input("Please give property a value: ")
     parameters = {
         str(propertyName) : str(value),
         }
@@ -103,12 +112,12 @@ try:
         enableThing(data)
         restartThing(data)
     else:
-        addProps = raw_input("Would you like to add properties?: Yes/No ")
+        addProps = input("Would you like to add properties?: Yes/No ")
         if addProps == "Yes":
             addProperties(data)
         else:
             print("Exiting Program")
-        addVals = raw_input("Would you like to add values to properties?: Yes/No ")
+        addVals = input("Would you like to add values to properties?: Yes/No ")
         if addVals == "Yes":
             addValues(data)
         else:

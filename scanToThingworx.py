@@ -10,128 +10,114 @@ import requests
 import json
 
 #scanner for rasperrypi to load onto thingworx
-data = raw_input("Please scan an item: ")
-base_url = "https:<ip_address>/Thingworx" #Will need to be changed on each vm startup
-appKey = "" #will make the appkey a variable when I obtain it
+scan = input("Please scan an item: ")
+appKey = "Some app key" #will make the appkey a variable when I obtain it
+base_url = "https://<ip_address>/Thingworx" #Will need to be changed on each vm startup
+header = {"Content-Type": "application/json"
+,"appKey": appKey
+,"Accept": "application/json"}
 
-def thingSearch(data):
-    print("Item number: " + data)
-    url = "{}/Things/"+data.format(base_url)
-    header = {"Content-Type": "application/json"
-              ,"appKey": appKey
-	          ,"Accept": "application/json"
-              }
+#Class that defines RESTful API callable
+class ThingworxAPI:
+    def __init__(self, scan, base_url, header):
+        self.scan = scan
+        self.base_url = base_url
+        self.header = header
 
-    response = requests.get(url, headers=header)
-    print(response.status_code)
-    global code
-    code = response.status_code
-    if code == 200:
-        print("This item is already on Thingworx")
-    return code
+    def thingSearch(self):
+        url = self.base_url+"/Things/"+self.scan
+        response = requests.get(url, headers=self.header)
+        print(response.status_code)
+        global code
+        code = response.status_code
+        if code == 200:
+            print("This item is already on Thingworx")
+        return code
 
-def enableThing(data):
-    url = "{}/Things/"+data+"/Services/EnableThing".format(base_url)
-    header = {"Content-Type": "application/json"
-              ,"appKey": appKey
-              }
-    response = requests.post(url, headers=header)
-    print(response.status_code)
+    def enableThing(self):
+        url = self.base_url+"/Things/"+scan+"/Services/EnableThing"
+        response = requests.post(url, headers=self.header)
+        print(response.status_code)
 
-def restartThing(data):
-    url = "{}/Things/"+data+"/Services/RestartThing".format(base_url)
-    header = {"Content-Type": "application/json"
-              ,"appKey": "f1a0b8da-0c90-4a51-a26e-584d3bf9e6e8"
-              }
-    response = requests.post(url, headers=header)
-    print(response.status_code)
+    def restartThing(self):
+        url = self.base_url+"/Things/"+scan+"/Services/RestartThing"
+        response = requests.post(url, headers=self.header)
+        print(response.status_code)
 
-def addThing(data):
-    dataName = raw_input("Please give scanned item a display name: ")
-    url = "{}/Resources/EntityServices/Services/CreateThing".format(base_url)
-    header = {
-        "Content-Type": "application/json"
-        ,"appKey": appKey
-        }
+    def addThing(self):
+        dataName = input("Please give scanned item a display name: ")
+        url = self.base_url+"/Resources/EntityServices/Services/CreateThing"
+        parameters = {
+            "name": scan
+            ,"thingTemplateName": "GenericThing"
+            ,"description": "This scanned item is (a) " + dataName
+             }
+        response = requests.post(url, headers=self.header, params=parameters)
+        print(response.status_code)
+        print(response.content)
+        print(json.dumps(parameters))
 
-    parameters = {
-        "name": data
-        ,"thingTemplateName": "GenericThing"
-        ,"description": "This scanned item is (a) " + dataName
-    }
-    response = requests.post(url, headers=header, params=parameters)
-    print(response.status_code)
-    print(response.content)
-    print(json.dumps(parameters))
-
-def addProperties(data):
-    url = "{}/Things/"+data+"/Services/AddPropertyDefinition".format(base_url)
-    header = {"Content-Type": "application/json"
-              ,"appKey": appKey
-              }
-    global propertyName
-    propertyName = input("Please give property a name: ")
-    ptype = input("Please give a unit type in all CAPS. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
-    description = input("Please give a descrption of the property: ")
-    parameters = {
+    def addProperties(self):
+        url = self.base_url+"/Things/"+scan+"/Services/AddPropertyDefinition"
+        global propertyName
+        propertyName = input("Please give property a name: ")
+        ptype = input("Please give a unit type in all CAPS. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
+        description = input("Please give a descrption of the property: ")
+        parameters = {
         "name": propertyName
         ,"type": ptype
         ,"description": description
         }
-    response = requests.post(url, headers=header, params=parameters)
-    print(response.status_code)
-    print(response.content)
-    print(json.dumps(parameters))
+        response = requests.post(url, headers=self.header, params=parameters)
+        print(response.status_code)
+        print(response.content)
+        print(json.dumps(parameters))
 
-def addValues(data):
-    propertyName = raw_input("Which property would you like to change? ")
-    url = "{}/Things/"+data+"/Properties/*".format(base_url)
-    header = {"Content-Type": "application/json"
-              ,"appKey": appKey
-              }
-    value = input("Please give property a value: ")
-    parameters = {
+    def addValues(self):
+        propertyName = input("Which property would you like to change? ")
+        url = self.base_url+"/Things/"+scan+"/Properties/*"
+        value = input("Please give property a value: ")
+        parameters = {
         str(propertyName) : str(value),
         }
-    response = requests.put(url, headers=header, params=parameters)
-    print(response.status_code)
-    print(response.content)
-    print(json.dumps(parameters))
+        response = requests.put(url, headers=self.header, params=parameters)
+        print(response.status_code)
+        print(response.content)
+        print(json.dumps(parameters))
 
-def services(data):
-    serviceName = raw_input("Name of service to execute: ")
-    url = '{}/Things'+data+'/Services/'+serviceName.format(base_url)
-    header = {"Content-Type": "application/json"
-              ,"appKey": appKey}
-    response = requests.post(url, headers=header)
-    print(response.status_code)
-    print(response.content)
+    def services(self):
+        serviceName = input("Name of service to execute: ")
+        url = self.base_url+'/Things'+scan+'/Services/'+serviceName
+        response = requests.post(url, headers=self.header)
+        print(response.status_code)
+        print(response.content)
+
 
 if __name__ == "__main__":
     try:
-        thingSearch(data)
+        thing = ThingworxAPI(scan, base_url, header)
+        thing.thingSearch()
         if code != 200:
-            addThing(data)
-            enableThing(data)
-            restartThing(data)
+            thing.addThing()
+            thing.enableThing()
+            thing.restartThing()
         else:
-            addProps = raw_input("Would you like to add properties?: Yes/No ")
+            addProps = input("Would you like to add properties?: Yes/No ")
             if addProps == "Yes":
-                addProperties(data)
+                thing.addProperties()
             else:
                 print("Exiting Program")
 
-            addVals = raw_input("Would you like to add values to properties?: Yes/No ")
+            addVals = input("Would you like to add values to properties?: Yes/No ")
             if addVals == "Yes":
-                addValues(data)
+                thing.addValues()
             else:
                 print("Exiting Program")
 
-            executeService = raw_input("Would you like to execute a service?: Yes/No ")
+            executeService = input("Would you like to execute a service?: Yes/No ")
             if executeService == "Yes":
-                services(data)
+                thing.services()
             else:
                 print("Exiting Program")
-
     except KeyboardInterrupt:
         print("Ctrl+C Programing Exiting")

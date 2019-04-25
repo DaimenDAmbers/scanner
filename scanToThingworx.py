@@ -11,8 +11,8 @@ import json
 
 #scanner for rasperrypi to load onto thingworx
 scan = input("Please scan an item: ")
-appKey = "Some app key" #will make the appkey a variable when I obtain it
-base_url = "https://<ip_address>/Thingworx" #Will need to be changed on each vm startup
+appKey = "bbe9861f-b5dc-442b-9bd7-c90eddb834a8" #will make the appkey a variable when I obtain it
+base_url = "http://137.135.95.46/Thingworx" #Will need to be changed on each vm startup
 header = {"Content-Type": "application/json"
 ,"appKey": appKey
 ,"Accept": "application/json"}
@@ -80,7 +80,7 @@ class ThingworxAPI:
         parameters = {
         str(propertyName) : str(value),
         }
-        response = requests.put(url, headers=self.header, params=parameters)
+        response = requests.put(url, headers=self.header, json=parameters)
         print(response.status_code)
         print(response.content)
         print(json.dumps(parameters))
@@ -99,6 +99,7 @@ if __name__ == "__main__":
         thing.thingSearch()
         if code != 200:
             thing.addThing()
+            thing.setProject()
             thing.enableThing()
             thing.restartThing()
         else:

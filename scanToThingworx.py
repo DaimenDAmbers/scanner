@@ -13,15 +13,15 @@ import json
 class ThingworxAPI:
     def __init__(self):
         #scanner for rasperrypi to load onto thingworx
-        self.scan = input("Please scan an item: ")
-        self.appKey = "bbe9861f-b5dc-442b-9bd7-c90eddb834a8" #will make the appkey a variable when I obtain it
-        self.base_url = "http://13.68.204.219/Thingworx" #Will need to be changed on each vm startup
+        self.thing = input("Please search for a thing: ")
+        self.appKey = "<your appkey>" #Update the carot brackets to your app key
+        self.base_url = "http://<your thingworx url>/Thingworx" #Update Thingworx instance to your url
         self.header = {"Content-Type": "application/json"
         ,"appKey": self.appKey
         ,"Accept": "application/json"}
 
     def thingSearch(self):
-        url = self.base_url+"/Things/"+self.scan
+        url = self.base_url+"/Things/"+self.thing
         response = requests.get(url, headers=self.header)
         print(response.status_code)
         global code
@@ -31,12 +31,12 @@ class ThingworxAPI:
         return code
 
     def enableThing(self):
-        url = self.base_url+"/Things/"+self.scan+"/Services/EnableThing"
+        url = self.base_url+"/Things/"+self.thing+"/Services/EnableThing"
         response = requests.post(url, headers=self.header)
         print(response.status_code)
 
     def restartThing(self):
-        url = self.base_url+"/Things/"+self.scan+"/Services/RestartThing"
+        url = self.base_url+"/Things/"+self.thing+"/Services/RestartThing"
         response = requests.post(url, headers=self.header)
         print(response.status_code)
 
@@ -44,7 +44,7 @@ class ThingworxAPI:
         dataName = input("Please give scanned item a display name: ")
         url = self.base_url+"/Resources/EntityServices/Services/CreateThing"
         parameters = {
-            "name": self.scan
+            "name": self.thing
             ,"thingTemplateName": "ScannedItemTemplate"
             ,"description": "This scanned item is (a) " + dataName
              }
@@ -54,7 +54,7 @@ class ThingworxAPI:
         print(json.dumps(parameters))
 
     def setProject(self):
-        url = self.base_url+"/Things/"+self.scan+"/Services/SetProjectName"
+        url = self.base_url+"/Things/"+self.thing+"/Services/SetProjectName"
         parameters = {
             "projectName": "Scanner"
         }
@@ -62,7 +62,7 @@ class ThingworxAPI:
         print(response.status_code)
 
     def addProperties(self):
-        url = self.base_url+"/Things/"+self.scan+"/Services/AddPropertyDefinition"
+        url = self.base_url+"/Things/"+self.thing+"/Services/AddPropertyDefinition"
         global propertyName
         propertyName = input("Please give property a name: ")
         ptype = input("Please give a unit type in all CAPS. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
@@ -79,7 +79,7 @@ class ThingworxAPI:
 
     def addValues(self):
         propertyName = input("Which property would you like to change? ")
-        url = self.base_url+"/Things/"+self.scan+"/Properties/*"
+        url = self.base_url+"/Things/"+self.thing+"/Properties/*"
         value = input("Please give property a value: ")
         parameters = {
         str(propertyName) : str(value),
@@ -91,7 +91,7 @@ class ThingworxAPI:
 
     def services(self):
         serviceName = input("Name of service to execute: ")
-        url = self.base_url+'/Things'+self.scan+'/Services/'+serviceName
+        url = self.base_url+'/Things'+self.thing+'/Services/'+serviceName
         response = requests.post(url, headers=self.header)
         print(response.status_code)
         print(response.content)

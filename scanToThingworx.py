@@ -14,7 +14,7 @@ class ThingworxAPI:
     def __init__(self):
         #scanner for rasperrypi to load onto thingworx
         self.thing = input("Please search for a thing: ")
-        self.appKey = "<your appkey>" #Update the carot brackets to your app key
+        self.appKey = "your api key" #Update the carot brackets to your app key
         self.base_url = "http://<your thingworx url>/Thingworx" #Update Thingworx instance to your url
         self.header = {"Content-Type": "application/json"
         ,"appKey": self.appKey
@@ -56,7 +56,7 @@ class ThingworxAPI:
     def setProject(self):
         url = self.base_url+"/Things/"+self.thing+"/Services/SetProjectName"
         parameters = {
-            "projectName": "Scanner"
+            "projectName": "IndustryDemo"
         }
         response = requests.post(url, headers=self.header, params=parameters)
         print(response.status_code)
@@ -65,11 +65,11 @@ class ThingworxAPI:
         url = self.base_url+"/Things/"+self.thing+"/Services/AddPropertyDefinition"
         global propertyName
         propertyName = input("Please give property a name: ")
-        ptype = input("Please give a unit type in all CAPS. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
+        ptype = input("Please give a unit type. (I.e. STRING, NUMBER, BOOLEAN etc.): ")
         description = input("Please give a descrption of the property: ")
         parameters = {
         "name": propertyName
-        ,"type": ptype
+        ,"type": ptype.upper()
         ,"description": description
         }
         response = requests.post(url, headers=self.header, params=parameters)
@@ -107,20 +107,20 @@ if __name__ == "__main__":
             thing.restartThing()
             thing.setProject()
         else:
-            addProps = input("Would you like to add properties?: Yes/No ")
-            if addProps == "Yes":
+            addProps = input("Would you like to add properties?: yes/no ")
+            if addProps.lower() == "yes":
                 thing.addProperties()
             else:
                 print("Exiting Program")
 
-            addVals = input("Would you like to add values to properties?: Yes/No ")
-            if addVals == "Yes":
+            addVals = input("Would you like to add values to properties?: yes/no ")
+            if addVals.lower() == "yes":
                 thing.addValues()
             else:
                 print("Exiting Program")
 
-            executeService = input("Would you like to execute a service?: Yes/No ")
-            if executeService == "Yes":
+            executeService = input("Would you like to execute a service?: yes/no ")
+            if executeService.lower() == "yes":
                 thing.services()
             else:
                 print("Exiting Program")

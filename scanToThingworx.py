@@ -95,6 +95,13 @@ class ThingworxAPI:
         response = requests.post(url, headers=self.header)
         print(response.status_code)
         print(response.content)
+        
+    def getPropValues(self):
+        propertyName = input("Which property would you like to see? ")
+        url = self.base_url+"/Things/"+self.thing+"/Properties/"+propertyName
+        response = requests.get(url, headers=self.header)
+        print(response.status_code)
+        print(json.loads(response.content.decode())['rows'][0])
 
 
 if __name__ == "__main__":

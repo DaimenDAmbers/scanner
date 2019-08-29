@@ -14,8 +14,8 @@ class ThingworxAPI:
     def __init__(self):
         #scanner for rasperrypi to load onto thingworx
         self.thing = input("Please search for a thing: ")
-        self.appKey = "your api key" #Update the carot brackets to your app key
-        self.base_url = "http://<your thingworx url>/Thingworx" #Update Thingworx instance to your url
+        self.appKey = "<your api key>" #Update the carot brackets to your app key
+        self.base_url = "http://<your Thingworx URL>/Thingworx" #Update Thingworx instance to your url
         self.header = {"Content-Type": "application/json"
         ,"appKey": self.appKey
         ,"Accept": "application/json"}
@@ -95,7 +95,7 @@ class ThingworxAPI:
         response = requests.post(url, headers=self.header)
         print(response.status_code)
         print(response.content)
-        
+
     def getPropValues(self):
         propertyName = input("Which property would you like to see? ")
         url = self.base_url+"/Things/"+self.thing+"/Properties/"+propertyName

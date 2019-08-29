@@ -1,4 +1,4 @@
-import scanToThingworx as scan
+import ThingworxClass as scan
 
 if __name__ == "__main__":
     try:

@@ -14,8 +14,8 @@ class ThingworxAPI:
     def __init__(self):
         #scanner for rasperrypi to load onto thingworx
         self.thing = input("Please search for a thing: ")
-        self.appKey = "<your api key>" #Update the carot brackets to your app key
-        self.base_url = "http://<your Thingworx URL>/Thingworx" #Update Thingworx instance to your url
+        self.appKey = "<your api key here>" #Update the carot brackets to your app key
+        self.base_url = "http://<your thingworx url here>/Thingworx" #Update Thingworx instance to your url
         self.header = {"Content-Type": "application/json"
         ,"appKey": self.appKey
         ,"Accept": "application/json"}
@@ -100,8 +100,14 @@ class ThingworxAPI:
         propertyName = input("Which property would you like to see? ")
         url = self.base_url+"/Things/"+self.thing+"/Properties/"+propertyName
         response = requests.get(url, headers=self.header)
-        print(response.status_code)
-        print(json.loads(response.content.decode())['rows'][0])
+        if (response.status_code == 200):
+            resType = json.loads(response.content.decode())['dataShape']['fieldDefinitions'][str(propertyName)]['baseType']
+            resValue = json.loads(response.content.decode())['rows'][0][str(propertyName)]
+            print("The status code is", response.status_code)
+            print("Type:", resType)
+            print("Value:", resValue)
+        else:
+            print("Invalid property name")
 
 
 if __name__ == "__main__":
